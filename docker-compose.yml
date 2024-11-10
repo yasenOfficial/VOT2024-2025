@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: . # kazva da se izgradi web service-a ot tekushtata direktoriya (.)
     ports:
-      - "8080:8080"
+      - "8080:8080" # mapva host port 8080 kum container port 8080
     depends_on:
-      - db
+      - db # dependva na db service-a
     env_file:
       - .env
 
@@ -17,7 +17,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data # mountva volume-a db_data kum /var/lib/postgresql/data
+      # ako container-a umre, volume-a ostava i ne se trie => se pazqt dannite throungh restarts
 
-volumes:
+volumes: # definira volume-a
   db_data:
