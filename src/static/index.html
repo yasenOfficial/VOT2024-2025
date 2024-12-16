@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 + JWT VOT Task</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+
+        <h1 class="text-center mb-4">S3 + JWT VOT Task</h1>
+
+
+        <div id="login-section">
+            <h3>Login</h3>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+
+        <hr>
+
+
+        <div id="file-section" style="display: none;">
+
+            <h3>Upload a File</h3>
+            <form id="upload-form">
+                <div class="form-group">
+                    <input type="file" id="upload-file" class="form-control-file" required>
+                </div>
+                <button type="submit" class="btn btn-success">Upload</button>
+            </form>
+
+            <hr>
+
+
+            <h3>List Files</h3>
+            <button id="list-files-btn" class="btn btn-info">List Files</button>
+            <ul id="file-list" class="list-group mt-3"></ul>
+
+            <hr>
+           
+            <button class="btn btn-secondary mt-3" id="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
