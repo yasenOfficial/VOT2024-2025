@@ -5,7 +5,7 @@ FROM python:3.11
 WORKDIR /app
 
 # Copy source code
-COPY src/ ./src/
+COPY . .
 COPY requirements.txt ./
 COPY .env ./
 

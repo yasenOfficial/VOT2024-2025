@@ -1,7 +1,6 @@
-const API_URL = "http://127.0.0.1:5000";  // Backend server URL
+const API_URL = "http://127.0.0.1:5000";  
 let jwtToken = "";
 
-// Handle Login
 document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const username = document.getElementById("username").value;
@@ -24,7 +23,6 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     }
 });
 
-// Handle File Upload
 document.getElementById("upload-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const file = document.getElementById("upload-file").files[0];
@@ -41,7 +39,6 @@ document.getElementById("upload-form").addEventListener("submit", async (e) => {
     alert(data.message || "Error uploading file.");
 });
 
-// List Files and Add Actions (Download, Modify, Delete, Rename)
 document.getElementById("list-files-btn").addEventListener("click", async () => {
     const response = await fetch(`${API_URL}/files`, {
         headers: { "Authorization": `Bearer ${jwtToken}` }
@@ -49,15 +46,14 @@ document.getElementById("list-files-btn").addEventListener("click", async () => 
 
     const data = await response.json();
     const fileList = document.getElementById("file-list");
-    fileList.innerHTML = ""; // Clear existing list
-
+    fileList.innerHTML = "";
     if (data.files) {
         data.files.forEach(file => {
-            // Create list item container
+
             const listItem = document.createElement("li");
             listItem.className = "list-group-item d-flex justify-content-between align-items-center";
 
-            // File name
+
             const fileNameSpan = document.createElement("span");
             fileNameSpan.textContent = file;
 
@@ -76,29 +72,24 @@ document.getElementById("list-files-btn").addEventListener("click", async () => 
             modifyBtn.textContent = "Modify";
             modifyBtn.onclick = () => modifyFilePrompt(file);
 
-            // Rename Button
             const renameBtn = document.createElement("button");
             renameBtn.className = "btn btn-sm btn-info mr-2";
             renameBtn.textContent = "Rename";
             renameBtn.onclick = () => renameFilePrompt(file);
 
-            // Delete Button
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "btn btn-sm btn-danger";
             deleteBtn.textContent = "Delete";
             deleteBtn.onclick = () => deleteFile(file);
 
-            // Append buttons to button group
             buttonGroup.appendChild(downloadBtn);
             buttonGroup.appendChild(modifyBtn);
             buttonGroup.appendChild(renameBtn);
             buttonGroup.appendChild(deleteBtn);
 
-            // Append file name and buttons to list item
             listItem.appendChild(fileNameSpan);
             listItem.appendChild(buttonGroup);
 
-            // Add list item to the file list
             fileList.appendChild(listItem);
         });
     } else {
@@ -106,7 +97,6 @@ document.getElementById("list-files-btn").addEventListener("click", async () => 
     }
 });
 
-// Download File
 function downloadFile(filename) {
     fetch(`${API_URL}/download/${filename}`, {
         headers: { "Authorization": `Bearer ${jwtToken}` }
@@ -126,7 +116,6 @@ function downloadFile(filename) {
     .catch(error => alert(error.message));
 }
 
-// Prompt to Modify (Overwrite) File
 function modifyFilePrompt(filename) {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -147,7 +136,6 @@ function modifyFilePrompt(filename) {
     fileInput.click();
 }
 
-// Rename File
 function renameFilePrompt(filename) {
     const newName = prompt("Enter the new file name:", filename);
     if (newName && newName !== filename) {
@@ -162,13 +150,12 @@ function renameFilePrompt(filename) {
         .then(response => response.json())
         .then(data => {
             alert(data.message || "Error renaming file.");
-            document.getElementById("list-files-btn").click(); // Refresh list
+            document.getElementById("list-files-btn").click(); 
         })
         .catch(error => alert(error.message));
     }
 }
 
-// Delete File
 function deleteFile(filename) {
     if (confirm(`Are you sure you want to delete "${filename}"?`)) {
         fetch(`${API_URL}/delete/${filename}`, {
@@ -178,14 +165,12 @@ function deleteFile(filename) {
         .then(response => response.json())
         .then(data => {
             alert(data.message || "Error deleting file.");
-            document.getElementById("list-files-btn").click(); // Refresh list
+            document.getElementById("list-files-btn").click();
         })
         .catch(error => alert(error.message));
     }
 }
 
-
-// Logout
 document.getElementById("logout-btn").addEventListener("click", () => {
     jwtToken = "";
     document.getElementById("file-section").style.display = "none";
