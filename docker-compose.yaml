@@ -12,29 +12,32 @@ services:
       - minio
       - keycloak
     volumes:
-      - ./src:/app/src 
+      - ./src:/app/src
+
   minio:
     image: minio/minio
     container_name: minio
     restart: always
     ports:
-      - "9000:9000"   
-      - "9001:9001"    
+      - "9000:9000"
+      - "9001:9001"
     volumes:
-      - ./data:/data    
+      - ./data:/data
     command: server /data --console-address ":9001"
 
   keycloak:
-      image: quay.io/keycloak/keycloak:latest
-      container_name: keycloak
-      environment:
-        - KEYCLOAK_ADMIN=admin
-        - KEYCLOAK_ADMIN_PASSWORD=admin
-      command: ["start-dev"] 
-      ports:
-        - "8080:8080"
-      healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:8080"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev", "--import-realm"]
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import

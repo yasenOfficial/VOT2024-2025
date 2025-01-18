@@ -7,8 +7,8 @@ Before running the project, you need to install the required libraries. Follow t
 ### 1.1 Clone the project:
 
 ```bash
-git clone <https://github.com/yasenOfficial/VOT2024-2025/tree/dr2> 
-cd <VOT2024-2025>
+git clone https://github.com/yasenOfficial/VOT2024-2025/tree/dr2
+cd VOT2024-2025
 ```
 
 ### 1.2 Create a virtual environment (optional but recommended):
