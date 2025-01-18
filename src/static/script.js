@@ -15,7 +15,9 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     const data = await response.json();
     if (response.ok) {
         jwtToken = data.token;
+        console.log(jwtToken);
         alert("Login successful!");
+        
         document.getElementById("login-section").style.display = "none";
         document.getElementById("file-section").style.display = "block";
     } else {

@@ -1,15 +1,28 @@
 import os
-import jwt
-import datetime
 from functools import wraps
-from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_file, send_from_directory
 import boto3
 from dotenv import load_dotenv
+from keycloak import KeycloakOpenID
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+CORS(app)
+
+KEYCLOAK_SERVER_URL = os.getenv("KEYCLOAK_SERVER_URL")
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
+KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
+KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET")
+
+keycloak_openid = KeycloakOpenID(
+    server_url=KEYCLOAK_SERVER_URL,
+    client_id=KEYCLOAK_CLIENT_ID,
+    realm_name=KEYCLOAK_REALM,
+    client_secret_key=KEYCLOAK_CLIENT_SECRET
+)
 
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
@@ -23,23 +36,20 @@ s3_client = boto3.client(
     aws_secret_access_key=SECRET_KEY
 )
 
-USER_DATA = {
-    os.getenv('USER1_USERNAME'): os.getenv('USER1_PASSWORD'),
-}
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+        if not token or not token.startswith("Bearer "):
+            return jsonify({'message': 'Token is missing or invalid!'}), 401
         try:
-            data = jwt.decode(token.split(" ")[1], app.config['SECRET_KEY'], algorithms=["HS256"])
-            request.user = data['username']
+            token_data = keycloak_openid.userinfo(token.split(" ")[1]) 
+            request.user = token_data['preferred_username']
         except Exception as e:
             return jsonify({'message': 'Token is invalid!', 'error': str(e)}), 401
         return f(*args, **kwargs)
     return decorated
+
 
 @app.route('/')
 def index():
@@ -55,13 +65,11 @@ def login():
     username = auth.get('username')
     password = auth.get('password')
 
-    if USER_DATA.get(username) == password:
-        token = jwt.encode({
-            'username': username,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        }, app.config['SECRET_KEY'], algorithm="HS256")
-        return jsonify({'token': token})
-    return jsonify({'message': 'Invalid credentials'}), 401
+    try:
+        token = keycloak_openid.token(username, password)
+        return jsonify({'access_token': token['access_token']})
+    except Exception as e:
+        return jsonify({'message': 'Invalid credentials', 'error': str(e)}), 401
 
 @app.route('/upload', methods=['POST'])
 @token_required
@@ -110,7 +118,7 @@ def modify_file(filename):
         return jsonify({'message': f'File {filename} modified successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 @app.route('/rename/<filename>', methods=['POST'])
 @token_required
 def rename_file(filename):
