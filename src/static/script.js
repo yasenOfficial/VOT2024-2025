@@ -14,7 +14,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
     const data = await response.json();
     if (response.ok) {
-        jwtToken = data.token;
+        jwtToken = data.access_token;
         console.log(jwtToken);
         alert("Login successful!");
         
