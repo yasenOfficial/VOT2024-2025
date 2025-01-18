@@ -689,7 +689,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "MzY06Pwu3YR1a8YPvnyMRsrQtE7C9kr5",
+      "secret": "**********",
       "redirectUris": [
         "http://localhost:5000/*"
       ],

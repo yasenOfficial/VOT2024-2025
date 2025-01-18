@@ -71,65 +71,6 @@ def login():
         return jsonify({'access_token': token['access_token']})
     except Exception as e:
         return jsonify({'message': 'Invalid credentials', 'error': str(e)}), 401
-    
-@app.route('/register', methods=['POST'])
-def register():
-    user_data = request.json
-    username = user_data.get('username')
-    password = user_data.get('password')
-    email = user_data.get('email')
-    
-    if not username or not password or not email:
-        return jsonify({'message': 'Username, password, and email are required!'}), 400
-
-    # Keycloak registration endpoint
-    register_url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/users"
-    
-    headers = {
-        'Authorization': f"Bearer {get_admin_token()}",  # Admin token
-        'Content-Type': 'application/json'
-    }
-
-    user_payload = {
-        "username": username,
-        "email": email,
-        "enabled": True,
-        "credentials": [
-            {
-                "type": "password",
-                "value": password,
-                "temporary": False
-            }
-        ]
-    }
-
-    try:
-        response = requests.post(register_url, json=user_payload, headers=headers)
-
-        if response.status_code == 201:
-            return jsonify({'message': 'User registered successfully!'}), 201
-        else:
-            return jsonify({'message': 'Failed to register user', 'error': response.json()}), response.status_code
-
-    except requests.exceptions.RequestException as e:
-        return jsonify({'message': 'Error communicating with Keycloak', 'error': str(e)}), 500
-
-def get_admin_token():
-    """Get an admin access token to interact with Keycloak's Admin API"""
-    data = {
-        'client_id': 'admin-cli',
-        'username': os.getenv('KEYCLOAK_ADMIN_USER'),
-        'password': os.getenv('KEYCLOAK_ADMIN_PASSWORD'),
-        'grant_type': 'password'
-    }
-    
-    response = requests.post(
-        f"{KEYCLOAK_SERVER_URL}/realms/master/protocol/openid-connect/token",
-        data=data
-    )
-    response_data = response.json()
-    return response_data.get('access_token')
-
 
 @app.route('/upload', methods=['POST'])
 @token_required
