@@ -71,6 +71,62 @@ def login():
         return jsonify({'access_token': token['access_token']})
     except Exception as e:
         return jsonify({'message': 'Invalid credentials', 'error': str(e)}), 401
+    
+@app.route('/register', methods=['POST'])
+def register():
+    user_data = request.json
+    username = user_data.get('username')
+    password = user_data.get('password')
+    email = user_data.get('email')
+    first_name = user_data.get('first_name')  
+    last_name = user_data.get('last_name')
+
+    if not username or not password or not email or not first_name or not last_name:
+        return jsonify({"message": "Username, password, email, first name, and last name are required"}), 400
+
+    try:
+        token_url = f"{KEYCLOAK_SERVER_URL}/realms/master/protocol/openid-connect/token"
+        token_data = {
+            "client_id": "admin-cli",
+            "username": os.getenv("KEYCLOAK_ADMIN_USERNAME"),
+            "password": os.getenv("KEYCLOAK_ADMIN_PASSWORD"),
+            "grant_type": "password"
+        }
+
+        response = requests.post(token_url, data=token_data)
+        if response.status_code != 200:
+            return jsonify({"message": "Failed to obtain access token", "error": response.text}), 500
+
+        access_token = response.json().get("access_token")
+
+        create_user_url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users"
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+
+        user_payload = {
+            "username": username,
+            "email": email,
+            "firstName": first_name,
+            "lastName": last_name,   
+            "enabled": True,
+            "credentials": [{"type": "password", "value": password, "temporary": False}],
+            "requiredActions": []  
+        }
+
+        user_response = requests.post(create_user_url, json=user_payload, headers=headers)
+
+        if user_response.status_code == 201:
+            return jsonify({"message": "User registered successfully"}), 201
+        else:
+            return jsonify({"message": "Failed to create user", "error": user_response.text}), 500
+
+    except Exception as e:
+        print(f"Error during registration: {e}")
+        return jsonify({"message": "Failed to register user", "error": str(e)}), 500
+
+
 
 @app.route('/upload', methods=['POST'])
 @token_required

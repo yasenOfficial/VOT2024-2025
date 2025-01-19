@@ -1,17 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S3 + JWT VOT Task</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container mt-5">
 
         <h1 class="text-center mb-4">S3 + JWT VOT Task</h1>
 
+        <div id="user-info" style="display: none;">
+            <h3>Welcome, <span id="logged-in-username"></span></h3>
+            <p>You're logged in successfully!</p>
+        </div>
 
+        <!-- Register Section -->
+        <div id="register-section" style="display: none;">
+            <h3>Register</h3>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" class="form-control" placeholder="Enter Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" class="form-control" placeholder="Enter Password" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="Enter Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-first-name">First Name</label>
+                    <input type="text" id="reg-first-name" class="form-control" placeholder="Enter First Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-last-name">Last Name</label>
+                    <input type="text" id="reg-last-name" class="form-control" placeholder="Enter Last Name" required>
+                </div>
+                <button type="submit" class="btn btn-success">Register</button>
+            </form>
+            <button class="btn btn-link" id="to-login">Back to Login</button>
+        </div>
+
+
+        <!-- Login Section -->
         <div id="login-section">
             <h3>Login</h3>
             <form id="login-form">
@@ -25,13 +62,13 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
+            <button class="btn btn-link" id="to-register">Register</button>
         </div>
 
         <hr>
 
-
+        <!-- File Management Section -->
         <div id="file-section" style="display: none;">
-
             <h3>Upload a File</h3>
             <form id="upload-form">
                 <div class="form-group">
@@ -42,17 +79,21 @@
 
             <hr>
 
-
             <h3>List Files</h3>
             <button id="list-files-btn" class="btn btn-info">List Files</button>
             <ul id="file-list" class="list-group mt-3"></ul>
 
             <hr>
-           
+
             <button class="btn btn-secondary mt-3" id="logout-btn">Logout</button>
         </div>
+
+        
+
     </div>
 
     <script src="script.js"></script>
+    <script src="register.js"></script>
 </body>
+
 </html>
