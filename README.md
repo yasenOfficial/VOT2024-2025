@@ -186,3 +186,25 @@ Response:
     "message": "File renamed successfully"
 }
 ```
+
+### 8. Registration
+
+```bash
+curl -X POST http://127.0.0.1:5000/register \
+    -H "Content-Type: application/json" \
+    -d '{
+        "username": "john_doe",
+        "password": "securePassword123",
+        "email": "john.doe@example.com",
+        "first_name": "John",
+        "last_name": "Doe"
+    }'
+```
+
+Response:
+
+```json
+{
+    "message": "User registered successfully"
+}
+```

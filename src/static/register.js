@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const logoutButton = document.getElementById("logout-btn");  
     const loggedInUsername = document.getElementById("logged-in-username"); 
+
+    // Switching between login and register forms
     toRegisterButton.addEventListener("click", () => {
         loginSection.style.display = "none";
         registerSection.style.display = "block";
@@ -91,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     logoutButton.addEventListener("click", () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("token"); // Remove token from local storage
         userInfoSection.style.display = "none";
         loginSection.style.display = "block";
     });

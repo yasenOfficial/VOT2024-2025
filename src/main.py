@@ -37,6 +37,8 @@ s3_client = boto3.client(
     aws_secret_access_key=SECRET_KEY
 )
 
+# Decorator to check if the aythorization header starts with a "Bearer"
+# The wrapped function is only exevced if the token is valid
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -56,6 +58,7 @@ def token_required(f):
 def index():
     return send_from_directory("static", "index.html")
 
+# To serve Html, JS
 @app.route('/<path:path>')
 def static_files(path):
     return send_from_directory("static", path)
@@ -67,13 +70,14 @@ def login():
     password = auth.get('password')
 
     try:
-        token = keycloak_openid.token(username, password)
+        token = keycloak_openid.token(username, password)  # Ask Keycloak to validate the credentials
         return jsonify({'access_token': token['access_token']})
     except Exception as e:
         return jsonify({'message': 'Invalid credentials', 'error': str(e)}), 401
     
 @app.route('/register', methods=['POST'])
 def register():
+    # Gets user data from the form
     user_data = request.json
     username = user_data.get('username')
     password = user_data.get('password')
@@ -81,10 +85,12 @@ def register():
     first_name = user_data.get('first_name')  
     last_name = user_data.get('last_name')
 
+
     if not username or not password or not email or not first_name or not last_name:
         return jsonify({"message": "Username, password, email, first name, and last name are required"}), 400
 
-    try:
+    try: 
+        # Auth with admin credentials to create a new user
         token_url = f"{KEYCLOAK_SERVER_URL}/realms/master/protocol/openid-connect/token"
         token_data = {
             "client_id": "admin-cli",
@@ -99,7 +105,7 @@ def register():
 
         access_token = response.json().get("access_token")
 
-        create_user_url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users"
+        create_user_url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users" # Impoertant! Create in my-realm not master!
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json"
