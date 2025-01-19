@@ -2,17 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const registerSection = document.getElementById("register-section");
     const loginSection = document.getElementById("login-section");
     const fileSection = document.getElementById("file-section");
-    const userInfoSection = document.getElementById("user-info");  // User Info section
-
+    const userInfoSection = document.getElementById("user-info");  
     const registerForm = document.getElementById("register-form");
     const loginForm = document.getElementById("login-form");
 
     const toRegisterButton = document.getElementById("to-register");
     const toLoginButton = document.getElementById("to-login");
 
-    const logoutButton = document.getElementById("logout-btn");  // Logout button
-    const loggedInUsername = document.getElementById("logged-in-username");  // Display username
-
+    const logoutButton = document.getElementById("logout-btn");  
+    const loggedInUsername = document.getElementById("logged-in-username"); 
     toRegisterButton.addEventListener("click", () => {
         loginSection.style.display = "none";
         registerSection.style.display = "block";
@@ -77,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
                 localStorage.setItem("token", data.access_token);
                 
-                // Extract username from the token and display it
                 const token = data.access_token;
                 const userPayload = JSON.parse(atob(token.split('.')[1]));
                 const userName = userPayload.preferred_username;
