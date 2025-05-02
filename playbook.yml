@@ -1,0 +1,26 @@
+---
+- name: Initial setup without user creation
+  hosts: local
+  become: true
+  tasks:
+    - name: Update apt cache (ignore errors)
+      apt:
+        update_cache: yes
+      ignore_errors: true
+    - name: Install useful packages
+      apt:
+        name:
+          - htop
+          - curl
+          - neofetch
+        state: present
+
+    - name: Create a welcome file
+      copy:
+        dest: /tmp/WELCOME.txt
+        content: "Ansible did this"
+        mode: '0644'
+
+    - name: Set hostname
+      hostname:
+        name: vot-ansible-demo

@@ -1,0 +1,8 @@
+---
+- name: Reset hostname back to original
+  hosts: local
+  become: true
+  tasks:
+    - name: Reset hostname
+      hostname:
+        name: yasens-Precision-5680
